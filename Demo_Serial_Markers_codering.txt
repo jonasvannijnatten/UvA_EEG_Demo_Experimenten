@@ -1,0 +1,15 @@
+Marker - betekenis
+10 - Start artefacten
+11 - oogknippers
+12 - horizontale oogbewegingen
+13 - kaakspieren
+14 - hoofdbewegingen
+15 - nekspieren
+
+20 - Start Ogen Dicht Ogen Open
+21 - 1 minuut ogen dicht
+22 - 1 minuut ogen open
+
+30 - Start Flanker taak
+31 - congruent
+32 - incongruent
