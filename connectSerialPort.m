@@ -3,6 +3,7 @@ function port = connectSerialPort(serialConnected)
 
 % initialize the port variable as 0
 port = 0;
+portnr = [];
 % check the user wants to use the serial port
 if serialConnected
     % list all available serial devices
@@ -18,8 +19,7 @@ if serialConnected
         index = input("Which item from the list should be used? ");
         portnr = portlist(index);
         % if no devices were found, leave the portnr empty
-    elseif isempty(portlist)
-        portnr = [];
+    elseif isempty(portlist)s
         disp("No connected serial ports found")
     end
     % if serialConnected is 0, don't try to connect
