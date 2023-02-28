@@ -20,7 +20,7 @@ Demo_Artefacten(serialConnected)
 
 Demo_OgenOpenDicht(serialConnected)
 
-Demo_FlankerTaak(serialConnected)
+Demo_FlankerTaak(serialConnected, 200, 10, 25, 5)
 
 %% Herstel origineel Matlab path
 % remove Flanker task from path
