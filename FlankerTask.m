@@ -1,22 +1,32 @@
-function FlankerTask
+function FlankerTask(nroftrials, instructionDuration, breakTrials, breakDuration)
 % Flanker task made after the paper of Hsieh, Yu, Chen, Yang & Wang (2020):
 % ERP correlates of a flanker task with varying levels of analytic-holistic cognitive style
 % https://www.sciencedirect.com/science/article/pii/S0191886919306051#fig0002
 
-try
-    %% set up variables
-    nroftrials = 50;
-    data(nroftrials) = struct('ppn', [], 'condition', [], 'RT', [], 'correct', []);
-
+% run the function without input for test mode. Provide input for a real
+% experiment
+if nargin == 0
+    nroftrials = 10;
+    instructionDuration = 2;
     breakTrials = 5;
     breakDuration = 5;
+end
+
+try
+    close
+    ppn = input('please provide a subject nr: ');
+    while isempty(ppn) || ~isnumeric(ppn)
+        ppn = input('please provide a subject nr: ');
+    end
+
+    %% set up variables
+    data(nroftrials) = struct('ppn', [], 'condition', [], 'RT', [], 'correct', []);
 
     %% connect to the serial port
     serialConnected = 1;
     port = connectSerialPort(serialConnected);
 
     %% Initialize figure window & Axes
-    close
     fh = figure(WindowState="fullscreen");
     fh.MenuBar="none";
     ah = axes(fh); %, Visible="off");
@@ -38,7 +48,7 @@ try
     % plot the instruction
     th = text(ah,.2,.75, instructionText, FontSize=30);
     % create a countdown loop from 10 to 1
-    for countdown = 1:-1:1
+    for countdown = instructionDuration:-1:1
         % print the countdown value under the instructions
         th.String = sprintf([instructionText '%d'], countdown);
         % wait one second before updating the countdown
@@ -97,13 +107,12 @@ try
     % make the fixation cross visible
     fixh.Visible=1;
 
-    % pause for 1-2 seconds
-    pause(rand(1,1)*.5+1)
-
     %% loop over trial
     for itrial = 1:nroftrials
         % randomly pick one of four conditions
         condition = randi(4);
+        % 1 second pre stimulus
+        pause(1)
         % make fixation cross invisible
         fixh.Visible=0;
         % show the stimulus (arrows)
@@ -120,7 +129,7 @@ try
         figure(fh)
         % show the arrows for 200 ms
         pause(.2)
-        % mage the arrows invisible again, and show the fixation cross.
+        % make the arrows invisible again, and show the fixation cross.
         arrowHandles(condition).Visible = 0;
         fixh.Visible=1;
         % wait for the user to respond
@@ -143,29 +152,25 @@ try
         data(itrial).condition = condition;
 
         % add an inter-trial-interval of 1-2 seconds
-        pause(rand(1,1)+1)
+        pause(rand(1))
 
         %% break every 25 trials
         if itrial < nroftrials && (mod(itrial,breakTrials) == 0)
             % hide the fixation cross
             fixh.Visible=0;
             breakInstructions = sprintf([ ...
-                'You are at %d%% of the experiment.\n' ...
+                'You are at trial %d of %d of the experiment.\n' ...
                 'Try to sit as still as possible during the task and blink in between trials.\n' ...
                 'Take a little break before you continue.\n\n' ...
-                ] , round(itrial*100/nroftrials,2));
+                ] , itrial, nroftrials);
             th.String = breakInstructions;
             th.Visible = 1;
 
             % have a break of at least 5 seconds with coutdown
             for countdown = breakDuration:-1:1
-                breakInstructions = sprintf([ ...
-                'You are at %.2f%% of the experiment.\n' ...
-                'Try to sit as still as possible during the task and blink in between trials.\n' ...
-                'Take a little break before you continue.\n\n%d' ...
-                ] , (itrial*100/nroftrials), countdown);
-                th.String = breakInstructions;
-                %             text(ah,.2,.75, breakInstructions, FontSize=30);
+                th.String = sprintf([breakInstructions '%d' ...
+                ], countdown);
+
                 % pause 1 second before updating the break countdown
                 pause(1)
                 % call the figure function to bring the figure to the
@@ -176,25 +181,34 @@ try
             % after the countdown, wait for the participant to continue
             th.String = sprintf([breakInstructions ...
                 'Press any key to continue' ...
-                ] , itrial*100/nroftrials);
-%             text(ah,.2,.75, breakInstructions, FontSize=30);
+                ] , itrial, nroftrials);
             % wait until the participant presses a key
             figure(fh)
             pause
-            th.Visible = 0;
+            th.Visible = 0;    
+            
+            % make the fixation cross visible
+            fixh.Visible=1;
+            % pause for 1-2 seconds
+            pause(rand(1))
         end
 
     end
 
 
     cla
-    text(ah,.42,.5,'Done!', FontSize=60)
-    pause(.5)
+    [data.ppn] = deal(ppn);
+    save(['FlankerData_' string(datetime('today','Format','yyyyMMdd')) '_' num2str(ppn)],'data')
+    endMessage = sprintf(['You are done with the experiment.\n' ...
+        'Thank you for participating.\n\n' ...
+        'Press any key to close this window.']);
+    text(ah,.42,.5,endMessage, FontSize=60)
+    pause
     close(fh)
-
 catch ME
     if exist('fh','var'); close(fh); end
     if exist('port','var'); port.delete; end
+    save(['FlankerData_ERROR_' string(datetime('today','Format','yyyyMMdd')) '_' num2str(ppn)],'data')
     opts.WindowStyle = 'modal';
     opts.Interpreter = 'tex';
     message = sprintf('Oops! Something went wrong :(.\n See the command window for more information.');
