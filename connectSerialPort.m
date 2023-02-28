@@ -15,7 +15,7 @@ if serialConnected
     elseif length(portlist)>1
         disp("Please indicate which COM port representes the serial port")
         disp(compose("%d: %s", (1:length(portlist))',(portlist)'))
-        index = input("");
+        index = input("Which item from the list should be used? ");
         portnr = portlist(index);
         % if no devices were found, leave the portnr empty
     elseif isempty(portlist)
