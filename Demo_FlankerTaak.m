@@ -26,6 +26,9 @@ try
 
     %% connect to the serial port
     port = connectSerialPort(serialConnected);
+    if serialConnected
+        port.write(30, "uint8")
+    end
 
     %% Initialize figure window & Axes
     fh = figure(WindowState="fullscreen");
@@ -123,7 +126,7 @@ try
         % send out a serial marker of the value 1, 2, 3 or 4, corresponding
         % with the condition
         if serialConnected
-            port.write(condition, "uint8")
+            port.write(30 +condition, "uint8")
         end
         % call the figure function to bring the figure to the foreground in
         % case the computer accidentally changed to another window.
