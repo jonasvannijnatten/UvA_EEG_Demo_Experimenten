@@ -52,14 +52,14 @@ disp(port)
 %% Example of sending markers in a loop
 % here the marker numbers 0 until 255 are sent out with a pause of
 % 100ms in between he markers.
-for i = 0:255
+for iMarker = 0:255
     % the command port.write sends out out the marker. the first input
     % argument is the marker nr (here the value of i), the second input
     % argument determines the value format; leave this at 'uint8'.
-    port.write(i,'uint8')
+    port.write(iMarker,'uint8')
     % with the display function the marker value is also printed to the
     % command window, this is not necessary in a real experiment.
-    disp(i)
+    disp(iMarker)
     % the pause function here makes sure there is a break before the
     % next marker is sent out. In an actual experiment this should be
     % the stimulus duration or reaction time for example.
