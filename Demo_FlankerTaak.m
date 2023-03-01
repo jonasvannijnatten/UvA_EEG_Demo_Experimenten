@@ -16,13 +16,13 @@ end
 
 try
     close
-    ppn = input('please provide a subject nr: ');
-    while isempty(ppn) || ~isnumeric(ppn)
-        ppn = input('please provide a subject nr: ');
-    end
+%     ppn = input('please provide a subject nr: ');
+%     while isempty(ppn) || ~isnumeric(ppn)
+%         ppn = input('please provide a subject nr: ');
+%     end
 
     %% set up variables
-    data(nroftrials) = struct('ppn', ppn, 'condition', [], 'RT', [], 'correct', []);
+    data(nroftrials) = struct('condition', [], 'RT', [], 'correct', []);
 
     %% connect to the serial port
     port = connectSerialPort(serialConnected);
@@ -200,7 +200,7 @@ try
     end
     cla
 %     [data.ppn] = deal(ppn);
-    save("FlankerData_" +  string(datetime('today','Format','yyyyMMdd')) + "_" + num2str(ppn),'data')
+    save("Flanker_Data_" +  string(datetime('today','Format','yyyyMMdd')),'data')
     endMessage = sprintf(['You are done with the experiment.\n' ...
         'Thank you for participating.\n\n' ...
         'Press any key to close this window.']);
@@ -210,7 +210,7 @@ try
 catch ME
     if exist('fh','var'); close(fh); end
     if exist('port','var'); port.delete; end
-    save("FlankerData_ERROR_" + string(datetime('today','Format','yyyyMMdd')) + "_" + num2str(ppn),'data')
+    save("Flanker_Data_ERROR_" + string(datetime('today','Format','yyyyMMdd')),'data')
     opts.WindowStyle = 'modal';
     opts.Interpreter = 'tex';
     message = sprintf('Oops! Something went wrong :(.\n See the command window for more information.');
