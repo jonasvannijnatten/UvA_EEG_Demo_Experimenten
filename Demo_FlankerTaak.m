@@ -136,6 +136,7 @@ try
         % make the arrows invisible again, and show the fixation cross.
         arrowHandles(condition).Visible = 0;
         fixh.Visible=1;
+        figure(fh)
         % wait for the user to respond
         pause
         % save the reaction time, keypress, correctness and the condition.
