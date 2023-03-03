@@ -37,8 +37,6 @@ try
 
     %% serialport
     port = connectSerialPort(serialConnected);
-    port.write(20, 'uint8')
-
 
     %% Demo experiment
     % tijdsduur per onderdeel, moet 60 seconden zijn
@@ -76,7 +74,14 @@ try
     h.text.String = instruction;
     % haal figuur naar de voorgrond
     figure(h.fig)
+    % start van het experiment
+    if serialConnected
+        port.write(20, 'uint8')
+    end
+    % korte pause voor de volgende marker
+    pause(.2)
 
+    % marker uitsturen
     marker = 21;
     if serialConnected
         port.write(marker,'uint8')
