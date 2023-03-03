@@ -201,7 +201,8 @@ try
     end
     cla
 %     [data.ppn] = deal(ppn);
-    save("Flanker_Data_" +  string(datetime('today','Format','yyyyMMdd')),'data')
+    filename = "Flanker_Data_" +  string(datetime('today','Format','yyyyMMdd'));
+    save(filename,'data')
     endMessage = sprintf(['You are done with the experiment.\n' ...
         'Thank you for participating.\n\n' ...
         'Press any key to close this window.']);
@@ -211,7 +212,8 @@ try
 catch ME
     if exist('fh','var'); close(fh); end
     if exist('port','var'); port.delete; end
-    save("Flanker_Data_ERROR_" + string(datetime('today','Format','yyyyMMdd')),'data')
+    filename = filename + "_ERROR";
+    save(filename,'data')
     opts.WindowStyle = 'modal';
     opts.Interpreter = 'tex';
     message = sprintf('Oops! Something went wrong :(.\n See the command window for more information.');
@@ -219,3 +221,44 @@ catch ME
     ME.rethrow
 end
 
+%% Data analysis
+
+% get data as variables from the struct
+RT = [data(:).RT]';
+correct = [data(:).correct]';
+condition = [data(:).condition]';
+
+% Get the hit trials for the congruent and incongruent conditions
+conHits = correct & ismember(condition, [1 2]) & RT<5;
+incHits = correct & ismember(condition, [3 4]) & RT<5;
+
+% get the reaction times of both conditions
+ConRT = RT(conHits);
+IncRT = RT(incHits);
+
+% calculate mean and SD
+meanCon = mean(ConRT);
+meanInc = mean(IncRT);
+sdCon = std(ConRT);
+sdInc = std(IncRT);
+
+figure
+subplot(1,2,1)
+histogram(ConRT, 10)
+hold on
+histogram(IncRT, 10)
+legend({'Congruent','Incongruent'})
+xlabel('reaction times (sec)')
+ylabel('count')
+% boxplot([ConRT; IncRT],[repmat("Congruent",[length(ConRT),1]); repmat("Incongruent", [length(IncRT),1])])
+% title('Reaction times on the Flanker Task')
+% xlabel("Condition")
+% ylabel("Reaction time (sec)")
+hold off
+subplot(1,2,2)
+stats = sprintf("Mean and standard deviation\n of the reaction times:\n" + ...
+    "Congruent: %2.3fsec (%2.3f)\n" + ...
+    "Incongruent: %2.3fsec (%2.3f)\n", ...
+    meanCon, sdCon, meanInc, sdInc);
+text(.1,.7,stats)
+axis off
