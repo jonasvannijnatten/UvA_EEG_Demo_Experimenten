@@ -87,6 +87,9 @@ try
     set(gca, 'visible', 'off')
     set(gcf, 'Color', 'k')
 
+    % create cleanup function in case user hits CTRL+C
+    cleanup = onCleanup(@()myCleanupFun(FIG));
+
     %% ask for ppn (used to store data)
     ppn = inputdlg('Participantnumber');
     ppn = str2double(ppn{1});
@@ -295,7 +298,7 @@ try
     % re-enable keyboard and mouse
     disp('reenabling keyboard and screen')
     Screen('CloseAll');
-    close(FIG)
+%     close(FIG)
     ListenChar;
     ShowCursor;
 
@@ -308,7 +311,7 @@ try
     set(t_fixcross,'visible', 'off')
     text(.2, .5, 'This is the end of the experiment', 'color', 'w','fontsize', 16);
     pause
-    close all
+%     close all
 
 catch ME
     disp('oops, something went wrong')
@@ -327,7 +330,7 @@ catch ME
     rethrow(ME)
 end % try-catch end
 
-end % function end
+end % main function end
 
 function port = connectSerialPort(serialConnected)
 % This functions identifies and connects to available serial ports
@@ -364,6 +367,10 @@ end
 if ~isempty(portnr)
     port = serialport(portnr, 19200,'Timeout',5);
 end
-end % function end
+end % connectSerial function end
 
-
+function myCleanupFun(FIG)
+disp('Close Figure')    
+close(FIG)
+close all
+end % myCleanUp function end
