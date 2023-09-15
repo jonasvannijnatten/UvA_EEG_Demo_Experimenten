@@ -1,3 +1,4 @@
+function GoNoGo(online)
 % GO-NoGo EXPERIMENT
 % Go-NoGo Task developed for Motoriek practicum for Psychobiologie
 % This script runs a Go/No-Go task where the subject has to press a button
@@ -13,7 +14,7 @@
 % when a high tone is heard.
 %
 % MARKERS
-% The experiment can send out markers via the DIO-box to use it in
+% The experiment can send out markers via the serial connector to use it in
 % combination with EEG. Therefore set the variable 'online' to 1.
 % The marker coding is as follows:
 % Marker 1 --> 80% NoGo condition, non-target (high tone)
@@ -25,11 +26,14 @@
 %
 % SOFTWARE REQUIREMENTS
 % - Psychtoolbox
-% - National instrument drivers NI-DAQmx
 %
 % HARDWARE REQUIREMENTS
-% - National Instruments DIO-box USB-6501 (for sending markers).
+% - PsyPhy amplifier with serial connector.
 
+% if called without input, run the experiment without EEG markers
+if nargin == 0
+    online = 0;
+end
 
 %% Experiment parameters
 disp('setting experiment parameters')
@@ -44,20 +48,19 @@ practicetrials = 1; % make 1 if practice should be shown
 numpractice = 15; % specify number of practice trials
 practiceTypes = [1 0]; % 50-50 high and low tones in practice
 
-%% initialize DIO-box & markers
-% Set online to 1 to send markers to the DIO-box.
-% Set online to 0 to run the experiment without sending markers.
-online = 1;
+%% TO-DO
+% replace DIO markers with serial
+%% connect to the serial port
+port = connectSerialPort(online);
 if online
-    dev = addDIObox;
-    if isempty(dev)
-        fprintf('Sluit de DIObox aan of run het experiment offline.\n')
-    return
+    if port == 0
+        fprintf('Sluit de versterker en serial kabel aan of run het experiment offline.\n')
+        return
     end
-    dev.outputSingleScan([ 0 0 0 0 0 0])
+    port.write(100, 'uint8');
+else
+    fprintf('Het experiment draait "offline", dus er worden geen markers verstuurd');
 end
-markersOFF = [0 0 0 0 0 0];
-markers = markersOFF;
 
 %% read audio files
 disp('reading audio files')
@@ -67,35 +70,35 @@ disp('reading audio files')
 % hiTone = audioplayer(hiTone, FsHi);
 
 
-%% setup data struct
-if exist('data', 'var') % safetynet in case data of last run is not stored properly there is one more chance
-    datalastrun = data;
-    clear data
-end
+% %% setup data struct
+% if exist('data', 'var') % safetynet in case data of last run is not stored properly there is one more chance
+%     datalastrun = data;
+%     clear data
+% end
 data(nroftrials) = struct('ppn', [],'condition', [], 'trial', [], 'tone', [], 'reactiontime', [], 'keypressed', []);
 
 %% start experiment in try-catch loop
 try
     %% set figure properties
-    figure
+    FIG = figure;
     set(gcf, 'MenuBar', 'none')
     set(gcf, 'ToolBar', 'none')
     set(gcf, 'Windowstate', 'fullscreen')
     set(gca, 'visible', 'off')
     set(gcf, 'Color', 'k')
-    
+
     %% ask for ppn (used to store data)
     ppn = inputdlg('Participantnumber');
     ppn = str2double(ppn{1});
-    
+
     %% Hide cursor and prevent key presses to type in the command window or
     % script
     disp('disabling keyboard')
     ListenChar(2);
     HideCursor;
     PsychDefaultSetup(2);
-    
-    
+
+
     %% practice trials
     if practicetrials
         disp('start practice trials')
@@ -112,21 +115,21 @@ try
         sound(hiTone,FsHi)
         KbWait([],2);
         set(t_practice, 'Visible', 'off')
-        
+
         % run trials
         t_fixcross = text(.45, .5, '+', 'color', 'w','fontsize', 40);
         pause(.1)
-        
+
         for ipractice = 1:numpractice
             type = practiceTypes(randi(length(practiceTypes)));
-            
+
             % check if key is pressed
-            [keyIsDown, secs, keyCode, deltaSecs] = KbCheck;
+            [keyIsDown, ~, ~, ~] = KbCheck;
             while keyIsDown % if key is pressed, wait until it is released
-                [keyIsDown, secs, keyCode, deltaSecs] = KbCheck;
+                [keyIsDown, ~, ~, ~] = KbCheck;
             end
             disp('start trial')
-            
+
             % play sound
             disp('playing sound')
             if type
@@ -134,19 +137,19 @@ try
             else
                 sound(hiTone,FsHi)
             end
-            
+
             tstart = GetSecs();
             while GetSecs()-tstart<trialDuration && (keyIsDown==0)
-                [keyIsDown, secs, keyCode, deltaSecs] = KbCheck;
+                [keyIsDown, ~, ~, ~] = KbCheck;
             end
-            
-            keypress = KbName(keyCode);
+
+%             keypress = KbName(keyCode);
             WaitSecs(trialDuration-(GetSecs()-tstart));
         end
         set(t_fixcross, 'Visible', 'off')
         pause(.1)
     end
-    
+
     %% start real trials
     disp('start real experiment')
     for condition = 1:2 % 1 - 20% go, 2 - 80% go
@@ -172,24 +175,24 @@ try
         set(t_instructions, 'Visible', 'off')
         t_fixcross = text(.45, .5, '+', 'color', 'w','fontsize', 40);
         pause(.1)
-        
+
         % start type (20% or 80% target)
         for itrial = 1:nroftrials
-            
+
             %% START TRIAL %%
             %%% select condition %%%
             type = conditionTypes(condition, randi(length(conditionTypes)));
             fprintf('condition %d; trial: %d / %d;  type: %d \n',condition, itrial, nroftrials, type)
-           
-            
+
+
             %%% wait until key is released %%%
-            [keyIsDown, secs, keyCode, deltaSecs] = KbCheck;
+            [keyIsDown, secs, keyCode, ~] = KbCheck;
             while keyIsDown % if key is pressed, wait until it is released
-                [keyIsDown, secs, keyCode, deltaSecs] = KbCheck;
+                [keyIsDown, secs, keyCode, ~] = KbCheck;
             end
             disp('start trial')
-            
-            
+
+
             %%% play sound %%%
             disp('playing sound')
             if type
@@ -197,55 +200,46 @@ try
             else
                 sound(hiTone,FsHi)
             end
-            
-            
+
+
             %%% set marker %%%
             % Marker 1 --> 20% target condition, target (low tone)
             % Marker 2 --> 20% target condition, non-target (high tone)
             % Marker 4 --> 80% target condition, target (low tone)
             % Marker 5 --> 80% target condition, non-target (high tone)
             if condition==1 && type==0
-                markers(1) = 1;
+                marker = 1;
             elseif condition==1 && type==1
-                markers(2)=1;
+                marker = 2;
             elseif condition==2 && type==0
-                markers(4)=1;
+                marker = 4;
             elseif condition==2 && type==1
-                markers(5)=1;
+                marker = 5;
             end
-            if online; dev.outputSingleScan(markers); end
-            disp(markers)
-            
+            if online; port.write(marker, "uint8"); end
+            disp(marker)
+
             %%% wait for keypress %%%
             tstart = GetSecs();
             while GetSecs()-tstart<trialDuration && (keyIsDown==0)
-                [keyIsDown, secs, keyCode, deltaSecs] = KbCheck;
+                [keyIsDown, secs, keyCode, ~] = KbCheck;
             end
-            
+
             %%% set marker %%%
             % Marker 3 --> 20% target condition, key press
             % Marker 6 --> 80% target condition, key press
             if keyIsDown && condition == 1
-                markers(3) = 1;
+                marker = 3;
             elseif keyIsDown && condition == 2
-                markers(6) = 1;
+                marker = 6;
             end
-            if online; dev.outputSingleScan(markers); pause(.1); end
-            disp(markers)
-            
-            %%% set markers %%%
-            % turn off all markers
-            markers= markersOFF;
-            if online
-                dev.outputSingleScan(markers)
-            end
-            disp(markers)
-            
-            
+            if online; port.write(marker, 'uint8'); pause(.1); end
+            disp(marker)
+
             %%% finish trial %%%
             % if key was pressed, wait until trial time is finished
             WaitSecs(trialDuration-(GetSecs()-tstart));
-            
+
             %%% get RT and key pressed %%%
             RT = NaN;
             keypress = KbName(keyCode);
@@ -259,11 +253,11 @@ try
                 RT = round(secs - tstart,2);
             end
             fprintf('key = %s\nrt  = %.4f \n', keypressed, RT)
-            
+
             pause(rand()/2+.5) % random ITI between 0.5 and 1 second
             %% END TRIAL %%
-            
-            
+
+
             %% insert pause screen every x trials
             if mod(itrial, pauseafter) == 0 && itrial ~= nroftrials
                 disp('pause for subject')
@@ -271,7 +265,7 @@ try
                 set(t_fixcross, 'Visible', 'off')
                 instructions = sprintf([ ...
                     'Pause - press any key to continue with the experiment\n\n' ...
-                    'Block: %d/2, trial %d/%d' ... 
+                    'Block: %d/2, trial %d/%d' ...
                     ], condition, itrial, nroftrials);
                 t_pause = text(.2, .6, instructions, 'color', 'w','fontsize', 16);
                 pause(2)
@@ -280,20 +274,20 @@ try
                 set(t_fixcross, 'Visible', 'on')
                 pause(1)
             end
-            
-            
+
+
             %% store data
             totaltrial = totaltrial + 1;
             data(totaltrial) = struct('ppn', ppn, 'condition', condition, 'trial', itrial, 'tone', type, 'reactiontime', RT, 'keypressed', keypressed);
-            
+
             fprintf('end of trial\n')
-            fprintf('t = %.4f \n\n', GetSecs() - tstart) % show total trial duration 
-            
+            fprintf('t = %.4f \n\n', GetSecs() - tstart) % show total trial duration
+
         end
         set(t_fixcross, 'Visible', 'off')
         pause(.1)
     end
-    
+
     %%%%%%%%%%%%%%%%%%%%%
     % END OF EXPERIMENT %
     %%%%%%%%%%%%%%%%%%%%%
@@ -301,69 +295,75 @@ try
     % re-enable keyboard and mouse
     disp('reenabling keyboard and screen')
     Screen('CloseAll');
+    close(FIG)
     ListenChar;
     ShowCursor;
-    
+
     %save data to harddrive
-    writetable(struct2table(data), ['GoNogo_' datestr(date,'yyyymmdd') '_ppn', num2str(ppn)])
-%     save(['GoNogo_' datestr(date,'yyyymmdd') '_ppn', num2str(ppn)], 'data')
-    
-    
+    writetable(struct2table(data), "GoNogo_" + string(datetime('today','Format','yyyyMMdd')) + "_ppn" + num2str(ppn))
+    %     save(['GoNogo_' datestr(date,'yyyymmdd') '_ppn', num2str(ppn)], 'data')
+
+
     %thank you screen
     set(t_fixcross,'visible', 'off')
     text(.2, .5, 'This is the end of the experiment', 'color', 'w','fontsize', 16);
     pause
     close all
-    
+
 catch ME
     disp('oops, something went wrong')
-    
+
     % In case of error
     % Close screen and re-enable mouse and keyboard
     disp('reanabling keyboard and screen')
     Screen('CloseAll');
+    close(FIG)
     ListenChar;
     ShowCursor;
-    
+
     % emergency data save
-    save(['GoNoGo_emergencySave_' datestr(datetime,'yyyymmdd_HHMM') '_ppn' num2str(ppn)])
+    save("GoNoGo_emergencySave_" + string(datetime('today','Format','yyyyMMdd')) + "_ppn" + num2str(ppn))
     close all
     rethrow(ME)
-end
+end % try-catch end
 
+end % function end
 
+function port = connectSerialPort(serialConnected)
+% This functions identifies and connects to available serial ports
 
-function dev = addDIObox()
-disp('looking for DIO-box')
-if exist("dev","var")
-    clear dev
-end
-daqreset
-% list devices
-devs = daqlist;
-% find National instruments USB-6501
-devnr = find(ismember(devs.Model, ["USB-6501 (OEM)", "USB-6501"]));
-
-if ~isempty(devnr)
-    disp('DIObox')
-    devInfo = devs(devnr,:);
-    % display device info
-    devInfo.DeviceInfo.disp
-    % create daq object
-    dev = daq.createSession('ni'); % hardcoded version
-    
-    % add channels to daq session
-    dev.addDigitalChannel(devInfo.DeviceID, 'port0/line0', 'OutputOnly');
-    dev.addDigitalChannel(devInfo.DeviceID, 'port0/line1', 'OutputOnly');
-    dev.addDigitalChannel(devInfo.DeviceID, 'port0/line2', 'OutputOnly');
-    dev.addDigitalChannel(devInfo.DeviceID, 'port0/line3', 'OutputOnly');
-    dev.addDigitalChannel(devInfo.DeviceID, 'port0/line4', 'OutputOnly');
-    dev.addDigitalChannel(devInfo.DeviceID, 'port0/line5', 'OutputOnly');
+% initialize the port variable as 0
+port = 0;
+portnr = [];
+% check the user wants to use the serial port
+if serialConnected
+    % list all available serial devices
+    portlist = serialportlist;
+    % if there is only one, assume this is the correct serial port
+    if length(portlist)==1
+        portnr = portlist;
+        disp(["COM port selected: " portnr])
+        % if there are multiple serial devices, let the user choose one
+    elseif length(portlist)>1
+        disp("Please indicate which COM port representes the serial port")
+        disp(compose("%d: %s", (1:length(portlist))',(portlist)'))
+        index = input("Please type in the position in the list");
+        portnr = portlist(index);
+        % if no devices were found, leave the portnr empty
+    elseif isempty(portlist)
+        disp("No connected serial ports found")
+    end
+    % if serialConnected is 0, don't try to connect
 else
-    disp('DIO-box niet gevonden')
-    dev = [];
-    return
+    disp('Serial connection is disabled in the code.')
 end
+
+% In case a port is selected, use that number to create the port object.
+% The port variable is given as output and can be used in the
+% function/script to send out markers.
+if ~isempty(portnr)
+    port = serialport(portnr, 19200,'Timeout',5);
 end
+end % function end
 
 

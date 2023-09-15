@@ -19,7 +19,7 @@ if serialConnected
         index = input("Please type in the position in the list");
         portnr = portlist(index);
         % if no devices were found, leave the portnr empty
-    elseif isempty(portlist)s
+    elseif isempty(portlist)
         disp("No connected serial ports found")
     end
     % if serialConnected is 0, don't try to connect
