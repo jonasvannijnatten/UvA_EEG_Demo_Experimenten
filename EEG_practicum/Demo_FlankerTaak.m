@@ -222,6 +222,8 @@ catch ME
 end
 
 %% Data analysis
+% select data file to load
+% uiload 
 
 % get data as variables from the struct
 RT = [data(:).RT]';
