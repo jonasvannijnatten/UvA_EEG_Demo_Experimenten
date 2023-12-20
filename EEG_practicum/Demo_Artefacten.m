@@ -7,6 +7,13 @@ try
 
     disp('Start demo-experiment: ARTEFACTEN')
 
+    %% serialport
+    port = connectSerialPort(serialConnected);
+    if port == 0
+        error('Kan geen serial poort vinden. Controleer of deze goed is aangesloten')
+    end
+    port.write(10, 'uint8')
+
     %% Init figuur
 
     % open en maximaliseer figuur
@@ -31,11 +38,6 @@ try
 
     % maak figuur zichtbaar
     h.fig.Visible =  'on';
-
-
-    %% serialport
-    port = connectSerialPort(serialConnected);
-    port.write(10, 'uint8')
 
     %% Demo experiment
     % tijdsduur per onderdeel
@@ -114,7 +116,7 @@ try
 
 catch ME
     if exist('h','var'); close(h.fig); end
-    if exist('port','var'); port.delete; end
+    if exist('port','var') && port~= 0; port.delete; end
     warndlg('An error occured, see the command window for more information.','Error')
     ME.rethrow
 end
