@@ -5,6 +5,13 @@
 % - Demo_OgenOpenDicht
 % - Demo_FlankerTaak
 
+%% controleer of een recente versie van Matlab wordt gebruikt
+v = version('-release');
+v = str2double(v(1:4));
+if v<2021
+    error("Gebruik voor deze demo een Matlab versie van 2021a of later.")
+end
+
 %% bewaar origineel Matlab path
 % add Flanker task to path
 curdir = cd;
