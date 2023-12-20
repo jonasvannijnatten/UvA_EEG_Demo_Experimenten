@@ -50,7 +50,7 @@ try
         'When the center arrow points towards the RIGHT, press "l" \n\n' ...
         ]);
     % plot the instruction
-    th = text(ah,.2,.75, instructionText, FontSize=30);
+    th = text(ah,.5,.75, instructionText, FontSize=20, VerticalAlignment="top", HorizontalAlignment="center");
     % create a countdown loop from 10 to 1
     for countdown = instructionDuration:-1:1
         % print the countdown value under the instructions
@@ -68,7 +68,8 @@ try
 
     %% Initialize all the screens with handles but keep them invisible
     % create the fixation cross with handle
-    fixh = text(ah,.5,.5,'+',FontSize=100, Color='k', Visible='off');
+    fixh = text(ah,.5,.5,'+',FontSize=100, Color='k', Visible='off', ...
+        HorizontalAlignment='center', VerticalAlignment='middle');
 
     %%
     hold on
@@ -77,28 +78,32 @@ try
     conRYs = [.75; .5; .25; .75; .5; .25; .75; .5; .25];
     conRUs = ones(9,1)*.2;
     conRVs = zeros(9,1);
-    conRQuiver = quiver(ah, conRXs, conRYs, conRUs, conRVs, 0, LineWidth=10, MaxHeadSize=1, Color='k', Visible='off');
+    conRQuiver = quiver(ah, conRXs, conRYs, conRUs, conRVs, 0, ...
+        LineWidth=10, MaxHeadSize=1, Color='k', Visible='off');
 
     % create target left congruent arrows
     conLXs = [.3; .3; .3; .6; .6; .6; .9; .9; .9];
     conLYs = [.75; .5; .25; .75; .5; .25; .75; .5; .25];
     conLUs = ones(9,1)*-.2;
     conLVs = zeros(9,1);
-    conLQuiver = quiver(conLXs, conLYs, conLUs, conLVs, 0, LineWidth=10, MaxHeadSize=1, Color='k', Visible='off');
+    conLQuiver = quiver(conLXs, conLYs, conLUs, conLVs, 0, ...
+        LineWidth=10, MaxHeadSize=1, Color='k', Visible='off');
 
     % create target right incongruent arrows
     incRXs = [.3; .3; .3; .6; .4; .6; .9; .9; .9];
     incRYs = [.75; .5; .25; .75; .5; .25; .75; .5; .25];
     incRUs = ones(9,1)*-.2; incRUs(5)=-incRUs(5);
     incRVs = zeros(9,1);
-    incRQuiver = quiver(incRXs, incRYs, incRUs, incRVs, 0, LineWidth=10, MaxHeadSize=1, Color='k', Visible='off');
+    incRQuiver = quiver(incRXs, incRYs, incRUs, incRVs, 0, ...
+        LineWidth=10, MaxHeadSize=1, Color='k', Visible='off');
 
     % create target left incongruent arrows
     incLXs = [.1; .1; .1; .4; .6; .4; .7; .7; .7];
     incLYs = [.75; .5; .25; .75; .5; .25; .75; .5; .25];
     incLUs = ones(9,1)*.2; incLUs(5)=-incLUs(5);
     incLVs = zeros(9,1);
-    incLQuiver = quiver(incLXs, incLYs, incLUs, incLVs, 0, LineWidth=10, MaxHeadSize=1, Color='k', Visible='off');
+    incLQuiver = quiver(incLXs, incLYs, incLUs, incLVs, 0, ...
+        LineWidth=10, MaxHeadSize=1, Color='k', Visible='off');
 
     % save the handles to all of the different stimuli into one variable.
     arrowHandles = [conRQuiver conLQuiver incRQuiver incLQuiver];
