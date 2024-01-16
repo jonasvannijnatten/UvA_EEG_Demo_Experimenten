@@ -1,4 +1,4 @@
-function Demo_OgenOpenDicht(serialConnected)
+function Demo_OgenOpenDicht2(serialConnected)
 % Dit is een demo experiment ontworpen voor het EEG practicum. Tijdens dit
 % experiment moet de proefpersoon 1 minuut ontspannen met de ogen dicht,
 % dan 1 minuut hoofdrekenen met de ogen open, en dan weer 1 minuut
@@ -52,7 +52,8 @@ try
         'Voer dan een minuut lang de rekensom uit in je hoofd. \n'...s
         'Daarna doe je weer je ogen dicht om een minuut te onstpannen. \n'...
         ' \n'...
-        'Probeer gedurende het hele experiment zo stil mogelijk te blijven zitten. \n'...
+        'Probeer gedurende het hele experiment zo stil mogelijk te blijven zitten, \n'...
+        'ook wanneer je overgaat van ogen dicht naar open en vice versa.\n'...
         ' \n'...
         'Ga vast klaar zitten en druk op een toets zodra je klaar bent om te beginnen. \n'...
         ]);
@@ -72,6 +73,10 @@ try
     instruction = sprintf('Sluit je ogen voor een minuut en probeer zo veel mogelijk te ontspannen.');
     % plot instructies
     h.text.String = instruction;
+
+    % voeg progress bar toe
+    h.line = line(h.axis, [0 1],[-.8 -.8], linewidth=8);
+
     % haal figuur naar de voorgrond
     figure(h.fig)
     % start van het experiment
@@ -90,7 +95,18 @@ try
     end
 
     % laat het scherm 1 minuut staan
-    pause(minuut)
+    % pause(minuut)
+
+    tic;
+    while toc < minuut
+        % toc/minuut
+        h.line.XData = [0 1-(toc/minuut)];
+        h.axis.XLim = [0 1];
+        h.axis.YLim = [-1 1.5];
+        refresh(h.fig);      
+        pause(.05)
+    end
+    % delete(h.line)
 
     %% Ogen open en rekenen
     % instructies voor rekenen
@@ -108,7 +124,16 @@ try
     end
 
     % laat het scherm 1 minuut staan
-    pause(minuut)
+    % pause(minuut)
+    tic;
+    while toc < minuut
+        % toc/minuut
+        h.line.XData = [0 1-(toc/minuut)];
+        h.axis.XLim = [0 1];
+        h.axis.YLim = [-1 1.5];
+        refresh(h.fig);      
+        pause(.05)
+    end
 
 
     %% Ogen dicht en ontspannen
@@ -125,8 +150,17 @@ try
     end
 
     % laat het scherm 1 minuut staan
-    pause(minuut)
-
+    % pause(minuut)
+    tic;
+    while toc < minuut
+        % toc/minuut
+        h.line.XData = [0 1-(toc/minuut)];
+        h.axis.XLim = [0 1];
+        h.axis.YLim = [-1 1.5];
+        refresh(h.fig);      
+        pause(.05)
+    end
+    h.line.Visible = "off";
 
     %% End of demo experiment
     instruction = sprintf([...
@@ -137,11 +171,11 @@ try
     waitforbuttonpress
     close(h.fig)
 
-    port.delete
+    if port~= 0; port.delete; end
 
 catch ME
-    if exist('h','var'); close(h.fig); end
-    if exist('port','var'); port.delete; end
+    if exist('h','var') && ishandle(h.fig); close(h.fig); end
+    if exist('port','var') && port~=0; port.delete; end
     warndlg('An error occured, see the command window for more information.','Error')
     ME.rethrow
 end
