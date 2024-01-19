@@ -1,13 +1,22 @@
-function Demo_OgenOpenDicht2(serialConnected)
+function Demo_OgenOpenDicht(serialConnected)
 % Dit is een demo experiment ontworpen voor het EEG practicum. Tijdens dit
 % experiment moet de proefpersoon 1 minuut ontspannen met de ogen dicht,
 % dan 1 minuut hoofdrekenen met de ogen open, en dan weer 1 minuut
 % ontspannen met de ogen dicht. Dit leidt bij de meeste proefpersonen tot
 % een zichtbare verandering in occipitale alfa oscillaties
 
+
+if nargin == 0
+    serialConnected = 0;
+end
+
 try
 
+
     disp('Start demo-experiment: OGEN OPEN DICHT')
+
+    %% serialport
+    port = connectSerialPort(serialConnected);
 
     %% init figuur
 
@@ -33,10 +42,6 @@ try
 
     % maak figuur zichtbaar
     h.fig.Visible =  'on';
-
-
-    %% serialport
-    port = connectSerialPort(serialConnected);
 
     %% Demo experiment
     % tijdsduur per onderdeel, moet 60 seconden zijn
@@ -104,7 +109,9 @@ try
         h.axis.XLim = [0 1];
         h.axis.YLim = [-1 1.5];
         refresh(h.fig);      
-        pause(.05)
+        figure(h.fig)
+        pause(.05) 
+
     end
     % delete(h.line)
 
@@ -132,6 +139,7 @@ try
         h.axis.XLim = [0 1];
         h.axis.YLim = [-1 1.5];
         refresh(h.fig);      
+        figure(h.fig)
         pause(.05)
     end
 
@@ -157,7 +165,8 @@ try
         h.line.XData = [0 1-(toc/minuut)];
         h.axis.XLim = [0 1];
         h.axis.YLim = [-1 1.5];
-        refresh(h.fig);      
+        refresh(h.fig);
+        figure(h.fig)
         pause(.05)
     end
     h.line.Visible = "off";
