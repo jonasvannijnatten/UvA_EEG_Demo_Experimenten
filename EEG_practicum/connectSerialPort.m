@@ -25,6 +25,7 @@ if serialConnected
     % if serialConnected is 0, don't try to connect
 else
     disp('Serial connection is disabled in the code.')
+    pause(1)
 end
 
 % In case a port is selected, use that number to create the port object.
