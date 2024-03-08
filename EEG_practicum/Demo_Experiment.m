@@ -1,3 +1,4 @@
+function Demo_Experiment
 %% Demo experiment
 % Dit script runt de verschillende delen van het Demo experiment voor het
 % EEG practicum bestaande uit:
@@ -19,15 +20,18 @@ addpath(genpath([curdir filesep 'Flanker']))
 
 %% Geef aan of je de serial poort wil gebruiken
 serialConnected = 1;
-
+port = connectSerialPort(serialConnected);
+if isempty(port)
+    error('Demo canceled because no serial port was detected')
+end
 %% Doe de Demo Experimenten
 disp('Start demo-experiment')
 
-Demo_Artefacten(serialConnected)
+% Demo_Artefacten(port)
 
-Demo_OgenOpenDicht(serialConnected)
+Demo_OgenOpenDicht(port)
 
-Demo_FlankerTaak(serialConnected, 200, 10, 25, 5)
+Demo_FlankerTaak(port, 200, 10, 25, 5)
 
 %% Herstel origineel Matlab path
 % remove Flanker task from path
