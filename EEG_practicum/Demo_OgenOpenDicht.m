@@ -1,4 +1,4 @@
-function Demo_OgenOpenDicht(serialConnected)
+function Demo_OgenOpenDicht(port)
 % Dit is een demo experiment ontworpen voor het EEG practicum. Tijdens dit
 % experiment moet de proefpersoon 1 minuut ontspannen met de ogen dicht,
 % dan 1 minuut hoofdrekenen met de ogen open, en dan weer 1 minuut
@@ -7,7 +7,7 @@ function Demo_OgenOpenDicht(serialConnected)
 
 
 if nargin == 0
-    serialConnected = 0;
+    port = 0;
 end
 
 try
@@ -15,8 +15,11 @@ try
 
     disp('Start demo-experiment: OGEN OPEN DICHT')
 
-    %% serialport
-    port = connectSerialPort(serialConnected);
+    
+    %% send marke at the start of the experiment
+    if port == 0
+        disp("Running experiment without markers")
+    end
 
     %% init figuur
 
@@ -85,15 +88,17 @@ try
     % haal figuur naar de voorgrond
     figure(h.fig)
     % start van het experiment
-    if serialConnected
+    if port~=0
         port.write(20, 'uint8')
+    else
+        disp(20)
     end
     % korte pause voor de volgende marker
     pause(.2)
 
     % marker uitsturen
     marker = 21;
-    if serialConnected
+    if port~=0
         port.write(marker,'uint8')
     else
         fprintf('marker: %d\n', marker)
@@ -124,7 +129,7 @@ try
     figure(h.fig)
 
     marker = 22;
-    if serialConnected
+    if port~=0
         port.write(marker,'uint8')
     else
         fprintf('marker: %d\n', marker)
@@ -151,7 +156,7 @@ try
     figure(h.fig)
 
     marker = 21;
-    if serialConnected
+    if port~=0
         port.write(marker,'uint8')
     else
         fprintf('marker: %s\n', marker)
@@ -180,7 +185,7 @@ try
     waitforbuttonpress
     close(h.fig)
 
-    if port~= 0; port.delete; end
+    % if port~= 0; port.delete; end
 
 catch ME
     if exist('h','var') && ishandle(h.fig); close(h.fig); end
