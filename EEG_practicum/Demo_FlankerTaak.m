@@ -1,4 +1,4 @@
-function Demo_FlankerTaak(serialConnected, nroftrials, instructionDuration, breakTrials, breakDuration)
+function Demo_FlankerTaak(port, nroftrials, instructionDuration, breakTrials, breakDuration)
 % function for a Flanker task using arrows pointing left and right.
 % Flanker task made after the paper of Hsieh, Yu, Chen, Yang & Wang (2020):
 % ERP correlates of a flanker task with varying levels of analytic-holistic cognitive style
@@ -14,6 +14,9 @@ if nargin == 0
     serialConnected = 0;
 end
 
+% define filename to store data, even in case of an error
+filename = "Flanker_Data_" +  string(datetime('today','Format','yyyyMMdd'));
+
 try
     close
 %     ppn = input('please provide a subject nr: ');
@@ -22,13 +25,7 @@ try
 %     end
 
     %% set up variables
-    data(nroftrials) = struct('condition', [], 'RT', [], 'correct', []);
-
-    %% connect to the serial port
-    port = connectSerialPort(serialConnected);
-    if serialConnected
-        port.write(30, "uint8")
-    end
+    data(nroftrials) = struct('condition', [], 'RT', [], 'key', [], 'correct', []);
 
     %% Initialize figure window & Axes
     fh = figure(WindowState="fullscreen");
@@ -130,8 +127,8 @@ try
         tic
         % send out a serial marker of the value 1, 2, 3 or 4, corresponding
         % with the condition
-        if serialConnected
-            port.write(30 +condition, "uint8")
+        if port~=0
+            port.write(30 + condition, "uint8")
         end
         % call the figure function to bring the figure to the foreground in
         % case the computer accidentally changed to another window.
@@ -144,8 +141,11 @@ try
         figure(fh)
         % wait for the user to respond
         pause
+        % get reaction time
+        RT = toc;
         % save the reaction time, keypress, correctness and the condition.
-        data(itrial).RT = toc;
+        data(itrial).condition = condition;
+        data(itrial).RT = RT;
         key = fh.get.CurrentCharacter;
         data(itrial).key = key;
         % If the center arrow points to the right (condition 1 & 3), then
@@ -159,7 +159,6 @@ try
         else
             data(itrial).correct = 0;
         end
-        data(itrial).condition = condition;
 
         % add an inter-trial-interval of 1-2 seconds
         pause(rand(1))
@@ -206,7 +205,6 @@ try
     end
     cla
 %     [data.ppn] = deal(ppn);
-    filename = "Flanker_Data_" +  string(datetime('today','Format','yyyyMMdd'));
     save(filename,'data')
     endMessage = sprintf(['You are done with the experiment.\n' ...
         'Thank you for participating.\n\n' ...
@@ -215,8 +213,8 @@ try
     pause
     close(fh)
 catch ME
-    if exist('fh','var'); close(fh); end
-    if exist('port','var'); port.delete; end
+    if exist('fh','var') && isvalid(fh); close(fh); end
+    if exist('port','var') && port~=0; port.delete; end
     filename = filename + "_ERROR";
     save(filename,'data')
     opts.WindowStyle = 'modal';
