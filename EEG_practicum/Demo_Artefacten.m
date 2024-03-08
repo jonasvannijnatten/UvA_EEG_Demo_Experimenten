@@ -1,4 +1,4 @@
-function Demo_Artefacten(serialConnected)
+function Demo_Artefacten(port)
 % Dit is een demo experiment ontworpen voor het EEG practicum. Tijdens dit
 % experiment wordt het effect van verschillende bewegingen op het EEG
 % signaal zichtbaar gemaakt.
@@ -7,12 +7,12 @@ try
 
     disp('Start demo-experiment: ARTEFACTEN')
 
-    %% serialport
-    port = connectSerialPort(serialConnected);
+    %% send marke at the start of the experiment
     if port == 0
-        error('Kan geen serial poort vinden. Controleer of deze goed is aangesloten')
+        disp("Running experiment without markers")
+    elseif port~=0
+        port.write(10, 'uint8')
     end
-    port.write(10, 'uint8')
 
     %% Init figuur
 
@@ -92,7 +92,7 @@ try
         figure(h.fig)
 
         % indien serialport is aangesloten stuur het uit, anders print marker
-        if serialConnected
+        if port~=0
             port.write(10+itrial,'uint8')
         else
             fprintf('marker: 1%i\n', itrial)
@@ -112,7 +112,7 @@ try
     waitforbuttonpress
     close(h.fig)
 
-    port.delete
+    % port.delete
 
 catch ME
     if exist('h','var'); close(h.fig); end
