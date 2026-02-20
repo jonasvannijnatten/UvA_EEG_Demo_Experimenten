@@ -48,7 +48,7 @@ try
 
     %% Demo experiment
     % tijdsduur per onderdeel, moet 60 seconden zijn
-    minuut = 60;
+    minuut = 20;
 
     %% instructies vooraf
     instruction = sprintf([...
@@ -159,7 +159,7 @@ try
     if port~=0
         port.write(marker,'uint8')
     else
-        fprintf('marker: %s\n', marker)
+        fprintf('marker: %d\n', marker)
     end
 
     % laat het scherm 1 minuut staan
@@ -174,6 +174,35 @@ try
         figure(h.fig)
         pause(.05)
     end
+
+    %% Ogen open en rekenen
+    % instructies voor rekenen
+    startgetal = randi([331 378]);
+    stapgetal  = randi([3 9]);
+    instruction = sprintf('Begin terug te tellen vanaf %d in stappen van %d.', startgetal, stapgetal);
+    h.text.String = instruction;
+    figure(h.fig)
+
+    marker = 22;
+    if port~=0
+        port.write(marker,'uint8')
+    else
+        fprintf('marker: %d\n', marker)
+    end
+
+    % laat het scherm 1 minuut staan
+    % pause(minuut)
+    tic;
+    while toc < minuut
+        % toc/minuut
+        h.line.XData = [0 1-(toc/minuut)];
+        h.axis.XLim = [0 1];
+        h.axis.YLim = [-1 1.5];
+        refresh(h.fig);      
+        figure(h.fig)
+        pause(.05)
+    end
+    
     h.line.Visible = "off";
 
     %% End of demo experiment

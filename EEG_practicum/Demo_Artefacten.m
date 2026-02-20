@@ -7,7 +7,7 @@ try
 
     disp('Start demo-experiment: ARTEFACTEN')
 
-    %% send marke at the start of the experiment
+    %% send marker at the start of the experiment
     if port == 0
         disp("Running experiment without markers")
     elseif port~=0
