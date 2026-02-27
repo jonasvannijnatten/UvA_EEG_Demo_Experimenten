@@ -31,7 +31,7 @@ Demo_Artefacten(port)
 
 Demo_OgenOpenDicht(port)
 
-% Demo_FlankerTaak(port, 200, 10, 25, 5)
+Demo_FlankerTaak(port, 200, 10, 25, 5)
 
 %% Herstel origineel Matlab path
 % remove Flanker task from path
