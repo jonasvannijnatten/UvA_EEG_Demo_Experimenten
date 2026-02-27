@@ -48,17 +48,17 @@ try
 
     %% Demo experiment
     % tijdsduur per onderdeel, moet 60 seconden zijn
-    minuut = 20;
+    duur = 20;
 
     %% instructies vooraf
     instruction = sprintf([...
         'Je gaat zo beginnen met het demo-experiment.\n'...
         ' \n'...
-        'Je begint met een minuut ontspannen met je ogen dicht. \n'...
-        'Zorg dat er iemand in de buurt is die aangeeft wanneer de minuut voorbij is. \n'...
+        'Je begint met 20 seconden ontspannen met je ogen dicht. \n'...
+        'Zorg dat er iemand in de buurt is die aangeeft wanneer de tijd voorbij is. \n'...
         'Daarna doe je je ogen open en volg dan rekeninstructies op het scherm. \n'...
-        'Voer dan een minuut lang de rekensom uit in je hoofd. \n'...s
-        'Daarna doe je weer je ogen dicht om een minuut te onstpannen. \n'...
+        'Voer dan 20 seconden lang de rekensom uit in je hoofd. \n'...s
+        'Daarna doe je beide onderdelen nog een keer. \n'...
         ' \n'...
         'Probeer gedurende het hele experiment zo stil mogelijk te blijven zitten, \n'...
         'ook wanneer je overgaat van ogen dicht naar open en vice versa.\n'...
@@ -78,7 +78,7 @@ try
 
     %% Ogen dicht en ontspannen
     % instructies voor onstpanning
-    instruction = sprintf('Sluit je ogen voor een minuut en probeer zo veel mogelijk te ontspannen.');
+    instruction = sprintf('Sluit je ogen en probeer zo veel mogelijk te ontspannen.');
     % plot instructies
     h.text.String = instruction;
 
@@ -108,9 +108,9 @@ try
     % pause(minuut)
 
     tic;
-    while toc < minuut
-        % toc/minuut
-        h.line.XData = [0 1-(toc/minuut)];
+    while toc < duur
+        % toc/duur
+        h.line.XData = [0 1-(toc/duur)];
         h.axis.XLim = [0 1];
         h.axis.YLim = [-1 1.5];
         refresh(h.fig);      
@@ -135,12 +135,12 @@ try
         fprintf('marker: %d\n', marker)
     end
 
-    % laat het scherm 1 minuut staan
-    % pause(minuut)
+    % laat het scherm 1 duur staan
+    % pause(duur)
     tic;
-    while toc < minuut
-        % toc/minuut
-        h.line.XData = [0 1-(toc/minuut)];
+    while toc < duur
+        % toc/duur
+        h.line.XData = [0 1-(toc/duur)];
         h.axis.XLim = [0 1];
         h.axis.YLim = [-1 1.5];
         refresh(h.fig);      
@@ -151,7 +151,7 @@ try
 
     %% Ogen dicht en ontspannen
     % instructies voor ontspanning
-    instruction = sprintf('Sluit je ogen voor een minuut en probeer zo veel mogelijk te ontspannen.');
+    instruction = sprintf('Sluit je ogen en probeer zo veel mogelijk te ontspannen.');
     h.text.String = instruction;
     figure(h.fig)
 
@@ -165,9 +165,9 @@ try
     % laat het scherm 1 minuut staan
     % pause(minuut)
     tic;
-    while toc < minuut
-        % toc/minuut
-        h.line.XData = [0 1-(toc/minuut)];
+    while toc < duur
+        % toc/duur
+        h.line.XData = [0 1-(toc/duur)];
         h.axis.XLim = [0 1];
         h.axis.YLim = [-1 1.5];
         refresh(h.fig);
@@ -190,12 +190,12 @@ try
         fprintf('marker: %d\n', marker)
     end
 
-    % laat het scherm 1 minuut staan
-    % pause(minuut)
+    % laat het scherm staan
+    % pause(duur)
     tic;
-    while toc < minuut
-        % toc/minuut
-        h.line.XData = [0 1-(toc/minuut)];
+    while toc < duur
+        % toc/duur
+        h.line.XData = [0 1-(toc/duur)];
         h.axis.XLim = [0 1];
         h.axis.YLim = [-1 1.5];
         refresh(h.fig);      
