@@ -7,6 +7,9 @@ import markers
 def main(port=0):
     print("Start demo-experiment: ARTEFACTEN")
 
+    # duration of each artefact
+    duration = 10
+
      # send marker at the start of the experiment
     if port == 0:
         print("Running experiment without markers")
@@ -45,8 +48,10 @@ def main(port=0):
         ]
 
     # show instructions for each artefact with a progress bar
-    for instr in instructions:
-        show_instructions(instr, 10, 'bar', False)
+    for idx, instr in enumerate(instructions):
+        if port == 0:
+            markers.send(10+idx)
+        show_instructions(instr, duration, 'bar', False)
 
 
 def show_instructions(instructions, duration, progress = None,wait_for_keypress=False):
