@@ -24,7 +24,7 @@ def show_instructions(instructions: str, duration: int, progress = None, wait_fo
     ifig.draw()
     
     # if no progress is specified, just wait for the duration
-    if progress == None: 
+    if progress is None: 
         ifig.wait(duration)
     
     # if progress is specified as 'countdown', show the instructions with a countdown 

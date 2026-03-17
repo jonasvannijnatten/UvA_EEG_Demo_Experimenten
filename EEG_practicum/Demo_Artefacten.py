@@ -53,8 +53,8 @@ def main(port=0):
         pbs.show_instructions(instr, duration, 'bar', False)  
 
     ifig.clear()
-    instructions = (f'Bedankt voor deelname aan het experiment.\n' +
-        f'Druk op een toets om het scherm af te sluiten en door te gaan naar het volgende experiment.\n')
+    instructions = ('Bedankt voor deelname aan het experiment.\n' +
+        'Druk op een toets om het scherm af te sluiten en door te gaan naar het volgende experiment.\n')
     pbs.show_instructions(instructions, 3, progress=None,  wait_for_keypress=True)
     ifig.close()
 
