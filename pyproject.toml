@@ -1,0 +1,16 @@
+[project]
+name = "uva-eeg-demo-experimenten"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "interactive-figure>=0.5.0",
+    "matplotlib>=3.10.8",
+    "pyserial>=3.5",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.6",
+]
