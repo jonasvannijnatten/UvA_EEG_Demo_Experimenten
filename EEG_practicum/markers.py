@@ -1,7 +1,8 @@
 import time
+import tkinter as tk
+
 import serial
 import serial.tools.list_ports
-import tkinter as tk
 
 
 def connect_serial_port(serial_connected=True):
@@ -17,7 +18,7 @@ def connect_serial_port(serial_connected=True):
 
     # Initialize the serial port variable
     # If no device is found, this will remain 0
-    port = 0
+    port = None
 
     # Will hold the selected COM port name (e.g. "COM3")
     portnr = []
@@ -27,17 +28,9 @@ def connect_serial_port(serial_connected=True):
         # Each entry is a ListPortInfo object
         portlist = list(serial.tools.list_ports.comports())
 
-        # # If exactly one device is found, automatically select it
-        # # NOTE: This condition is currently set to 99 and will never trigger
-        # # unless intentionally changed (probably meant to be == 1)
-        # if len(portlist) == 99:
-        #     portnr = portlist[0]
-        #     print(f"COM port selected: {portnr}")
-
         # If one or more devices are found, let the user choose via GUI
         if len(portlist) >= 1:
-            portnr = chooseCOMport(portlist)
-            print("COM port selected: " + portnr)
+            portnr = choose_COM_port(portlist)
 
         # If no serial devices are detected
         elif len(portlist) == 0:
@@ -49,13 +42,13 @@ def connect_serial_port(serial_connected=True):
 
     # If a COM port was successfully selected, open the serial connection
     # Otherwise, `port` remains 0
-    if not len(portnr) == 0:
+    if len(portnr) != 0:
         port = serial.Serial(portnr, baudrate=19200, timeout=5)
 
     return port
 
 
-def chooseCOMport(ports):
+def choose_COM_port(ports):
     """
     Opens a Tkinter dialog that allows the user to select a serial port.
 
@@ -79,6 +72,7 @@ def chooseCOMport(ports):
         nonlocal selection
         display_value = var.get()
         selection = port_map[display_value]  # Extract COM port only
+        print(f'Selected serial port: {display_value}')
         dialog.destroy()
         root.quit()
 
@@ -140,37 +134,6 @@ def chooseCOMport(ports):
     return selection
 
 
-def test_markers(serial_connected=True, marker_range=10):
-    """
-    Sends a sequence of test markers over the serial port.
-
-    Arguments:
-    serial_connected (bool):
-        Whether a serial device is expected to be connected.
-    port:
-        Open serial.Serial object or 0 if no device is connected.
-    marker_range (int):
-        Unused parameter (currently markers are hard-coded from 1 to 10).
-    """
-    # Connect to the serial device
-    port = connect_serial_port(True)
-
-    if port == 0:
-        print('Not sending any markers since no device has been connected')
-    else:
-        print('Running a marker test')
-
-        # Send markers 1 through 10
-        for idx in range(1, 11):
-            print(idx)  # Print marker value to terminal
-            send(port, idx)
-            time.sleep(.1)  # Short pause between markers
-        print('Marker test completed')
-        
-        # Close the serial connection
-        port.close
-
-
 def send(port, marker_value):
     """
     Sends a single marker value over the serial port.
@@ -188,7 +151,68 @@ def send(port, marker_value):
     # Send the marker over the serial port
     port.write(marker)
 
+
+def test_markers(serial_connected=True, marker_range=10):
+    """
+    Sends a sequence of test markers over the serial port.
+
+    Arguments:
+    serial_connected (bool):
+        Whether a serial device is expected to be connected.
+    port:
+        Open serial.Serial object or 0 if no device is connected.
+    marker_range (int):
+        The range of marker values to send (e.g., 10 will send markers 1–10).
+    """
+    
+    print('\nRunning a marker test (Send)')
+
+    # Connect to the serial device
+    port = connect_serial_port(serial_connected)
+
+    if port == 0:
+        print('Not sending any markers since no device has been connected')
+    else:
+        print('Sending markers...')
+        # Send markers 1 through 10
+        for idx in range(1, marker_range+1):
+            print(idx)  # Print marker value to terminal
+            send(port, idx)
+            time.sleep(.5)  # Short pause between markers
+        print('Marker test completed')
+        
+        # Close the serial connection
+        port.close()
+
+def read_markers():
+    print('\nRunning marker test (Read)')
+    # Connect to the serial device
+    port = connect_serial_port(True)
+
+    # # Configure the serial port
+    # ser = serial.Serial(
+    #     port='COM5',        # Change to your port (e.g., '/dev/ttyUSB0' on Linux/Mac)
+    #     baudrate=19200,      # Match your device baud rate
+    #     timeout=1           # Timeout in seconds
+    # )
+    print(port.port)
+
+    try:
+        print('reading markers')
+        while True:
+            data = port.read(1)  # Read 10 bytes
+            if data:
+                marker = int.from_bytes(data, byteorder='big')
+                print(f'{marker}')
+
+    except KeyboardInterrupt:
+        pass
+    finally:
+        port.close()
+
+
 # this section only runs if this file is executed directly
 if __name__ == '__main__':
     # Run a simple marker test
-    test_markers(serial_connected=True, marker_range=10)
+    # test_markers(serial_connected=True, marker_range=10)
+    read_markers()
