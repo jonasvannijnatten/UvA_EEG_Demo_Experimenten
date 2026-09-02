@@ -7,6 +7,7 @@ function Demo_FlankerTaak(port, nroftrials, instructionDuration, breakTrials, br
 % run the function without input for test mode. Provide input for a real
 % experiment
 if nargin == 0
+    port = 0;
     nroftrials = 10;
     instructionDuration = 2;
     breakTrials = 5;
