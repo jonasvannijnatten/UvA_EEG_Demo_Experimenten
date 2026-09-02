@@ -1,6 +1,6 @@
-from interactive_figure import interactive_figure as ifig
-import PB_snippets as pbs
 import markers
+import PB_snippets as pbs
+from interactive_figure import interactive_figure as ifig
 
 
 def main(port=0):

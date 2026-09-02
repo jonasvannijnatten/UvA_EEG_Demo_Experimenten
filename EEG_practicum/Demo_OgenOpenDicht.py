@@ -1,7 +1,9 @@
-from interactive_figure import interactive_figure as ifig
-import PB_snippets as pbs
-import markers
 import random
+
+import markers
+import PB_snippets as pbs
+from interactive_figure import interactive_figure as ifig
+
 
 def main(port=0):
     print("Start demo-experiment: Ogen Open/Dicht")
