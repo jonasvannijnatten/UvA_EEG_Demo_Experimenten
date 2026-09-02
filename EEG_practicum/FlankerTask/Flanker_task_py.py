@@ -13,6 +13,7 @@ import os
 import random
 import time
 
+import markers
 import matplotlib.pyplot as plt
 import pandas as pd
 from interactive_figure import interactive_figure
@@ -36,8 +37,9 @@ CONDITION_INFO = {
 def main():
     """Set up and run the Flanker task."""
     global serial_port
+    
 
-    debugging = False
+    debugging = True
     if debugging:
         participant_number = "999"
         number_of_trials = 10
@@ -77,7 +79,10 @@ def main():
             break_trials=break_trials,
             break_duration=break_duration,
         )
-        save_data(data_all_trials, participant_number)
+        if debugging:
+            save_data(data_all_trials, participant_number)
+        else:
+            save_data(data_all_trials, participant_number, 'DEBUG')
         show_instructions(
             "You are done with the experiment.\n"
             "Thank you for participating.",
@@ -193,11 +198,11 @@ def run_trial(condition):
     if response_key is not None:
         # A response was already made during stimulus presentation.
         # Keep that response and let the fixation cross remain for 1 second.
-        interactive_figure.wait(1)
+        interactive_figure.wait(1.8)
     else:
         # No stimulus-period response: accept a response during the one-second
         # post-stimulus fixation period.
-        interactive_figure.wait_for_interaction(1)
+        interactive_figure.wait_for_interaction(1.8)
         response_key = normalise_key(interactive_figure.get_last_key_press())
 
     # RT is always relative to stimulus onset. If no response was made within
@@ -206,6 +211,8 @@ def run_trial(condition):
         rt = None
     else:
         rt = time.perf_counter() - start_time
+        remaining_time = 1.2 - (time.perf_counter() - start_time)
+        interactive_figure.wait(max(0, remaining_time))
 
     correct = response_key == info["correct_key"]
     return response_key, correct, rt
@@ -221,12 +228,12 @@ def normalise_key(response_key):
 def show_flanker_stimulus(condition):
     """Draw the appropriate 3 by 3 array of left/right arrows."""
     info = CONDITION_INFO[condition]
-    target_arrow = "→" if info["target"] == "right" else "←"
+    target_arrow = ">" if info["target"] == "right" else "<"
 
     if info["congruency"] == "congruent":
         flanker_arrow = target_arrow
     else:
-        flanker_arrow = "←" if target_arrow == "→" else "→"
+        flanker_arrow = "<" if target_arrow == ">" else ">"
 
     interactive_figure.clear()
     axis = plt.gca()
