@@ -56,7 +56,7 @@ def main():
         try:
             import markers
             serial_port = markers.connect_serial_port(EEG_CONNECTED)
-        except Exception as error:
+        except (ImportError, OSError) as error:
             print("Unable to connect to the serial device.")
             print("An exception occurred:", type(error).__name__)
             return
