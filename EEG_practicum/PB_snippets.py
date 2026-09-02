@@ -1,6 +1,7 @@
+import time
+
 import interactive_figure as ifig
 import matplotlib.pyplot as plt
-import time
 
 
 def show_instructions(instructions: str, duration: int, progress = None, wait_for_keypress=False):
