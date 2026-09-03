@@ -12,7 +12,7 @@ def main(port=0):
     if port == 0:
         print("Running experiment without markers")
     else:
-        markers.send(port, 10)
+        markers.send(port, 20)
 
     # create an interactive figure which is used throughout the experiment
     ifig.create(hide_labels=True, hide_toolbar=True)
@@ -63,7 +63,7 @@ def main(port=0):
 
 if __name__ == '__main__':
     # Connect to the serial device
-    port = markers.connect_serial_port(serial_connected=False)
+    port = markers.connect_serial_port(serial_connected=True)
 
     # Run the main experiment
     main(port)

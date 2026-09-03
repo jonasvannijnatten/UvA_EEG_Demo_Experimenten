@@ -49,7 +49,7 @@ def main(port=0):
     # show instructions for each artefact with a progress bar
     for idx, instr in enumerate(instructions):
         if port != 0:
-            markers.send(10+idx)
+            markers.send(port, 10+idx+1)
         pbs.show_instructions(instr, duration, 'bar', False)  
 
     ifig.clear()
@@ -60,7 +60,7 @@ def main(port=0):
 
 if __name__ == '__main__':
     # Connect to the serial device
-    port = markers.connect_serial_port(serial_connected=False)
+    port = markers.connect_serial_port(serial_connected=True)
 
     # Run the main experiment
     main(port)
