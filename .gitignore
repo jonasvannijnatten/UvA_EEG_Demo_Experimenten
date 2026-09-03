@@ -5,3 +5,4 @@
 /EEG_practicum/FlankerTask/__pycache__
 *.csv
 *.zip
+/__pycache__
