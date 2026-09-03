@@ -13,14 +13,12 @@ import os
 import random
 import time
 
-import markers
 import matplotlib.pyplot as plt
 import pandas as pd
 from interactive_figure import interactive_figure
 
 # Set this to True only when the markers module and EEG serial device are ready.
-EEG_CONNECTED = False
-serial_port = None
+EEG_CONNECTED = True
 
 CONDITION_INFO = {
     1: {"name": "congruent_right", "congruency": "congruent",
@@ -34,12 +32,10 @@ CONDITION_INFO = {
 }
 
 
-def main():
+def main(debugging = False):
     """Set up and run the Flanker task."""
     global serial_port
     
-
-    debugging = True
     if debugging:
         participant_number = "999"
         number_of_trials = 10
@@ -311,7 +307,7 @@ def save_data(data_all_trials, participant_number, suffix=""):
     """Save trial-level data as a CSV file in the data directory."""
     df = pd.DataFrame(data_all_trials)
     filename = os.path.realpath(
-        f"data/Flanker_task_S{participant_number}{suffix}.csv"
+        f"Flanker_data/Flanker_S{participant_number}{suffix}.csv"
     )
     df.to_csv(filename, index=False)
     print(f"\nObtained data:\n{df}\n")
