@@ -17,7 +17,7 @@ def connect_serial_port(serial_connected=True):
     """
 
     # Initialize the serial port variable
-    # If no device is found, this will remain 0
+    # If no device is found, this will remain None
     port = None
 
     # Will hold the selected COM port name (e.g. "COM3")
