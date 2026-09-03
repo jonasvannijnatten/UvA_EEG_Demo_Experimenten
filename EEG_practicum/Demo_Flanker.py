@@ -194,11 +194,14 @@ def run_trial(condition):
     if response_key is not None:
         # A response was already made during stimulus presentation.
         # Keep that response and let the fixation cross remain for 1 second.
+        # print(f'RT ={time.perf_counter() - start_time}')
+        rt = time.perf_counter() - start_time
         interactive_figure.wait(1.8)
     else:
         # No stimulus-period response: accept a response during the one-second
         # post-stimulus fixation period.
         interactive_figure.wait_for_interaction(1.8)
+        rt = time.perf_counter() - start_time
         response_key = normalise_key(interactive_figure.get_last_key_press())
 
     # RT is always relative to stimulus onset. If no response was made within
@@ -206,9 +209,10 @@ def run_trial(condition):
     if response_key is None:
         rt = None
     else:
-        rt = time.perf_counter() - start_time
-        remaining_time = 1.2 - (time.perf_counter() - start_time)
-        interactive_figure.wait(max(0, remaining_time))
+        # rt = time.perf_counter() - start_time
+        remaining_time = 1.8 - (time.perf_counter() - start_time)
+        # print(f'remaining ime = {remaining_time}')
+        interactive_figure.wait(max(0.01, remaining_time))
 
     correct = response_key == info["correct_key"]
     return response_key, correct, rt
