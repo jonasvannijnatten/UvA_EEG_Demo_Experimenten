@@ -1,3 +1,7 @@
 
 *.mat
 *.txt
+/EEG_practicum/__pycache__
+/EEG_practicum/FlankerTask/__pycache__
+*.csv
+*.zip
