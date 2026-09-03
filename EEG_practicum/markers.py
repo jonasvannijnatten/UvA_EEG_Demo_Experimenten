@@ -173,7 +173,7 @@ def test_markers(serial_connected=True, marker_range=10):
     if port == 0:
         print('Not sending any markers since no device has been connected')
     else:
-        print('Sending markers...')
+        print(f'Sending markers 1 through {marker_range}')
         # Send markers 1 through 10
         for idx in range(1, marker_range+1):
             print(idx)  # Print marker value to terminal
@@ -188,17 +188,10 @@ def read_markers():
     print('\nRunning marker test (Read)')
     # Connect to the serial device
     port = connect_serial_port(True)
-
-    # # Configure the serial port
-    # ser = serial.Serial(
-    #     port='COM5',        # Change to your port (e.g., '/dev/ttyUSB0' on Linux/Mac)
-    #     baudrate=19200,      # Match your device baud rate
-    #     timeout=1           # Timeout in seconds
-    # )
     print(port.port)
 
     try:
-        print('reading markers')
+        print('reading markers.\nPress Ctrl + Esc to exit the program.')
         while True:
             data = port.read(1)  # Read 10 bytes
             if data:
@@ -209,10 +202,16 @@ def read_markers():
         pass
     finally:
         port.close()
+        print('Finished reading markers')
 
 
 # this section only runs if this file is executed directly
 if __name__ == '__main__':
     # Run a simple marker test
-    # test_markers(serial_connected=True, marker_range=10)
-    read_markers()
+    test_choice = int(input("I will run a test script to test the serial connection. Press 1 if you want to test sending, press 2 if you want to test reading.").strip())
+    if test_choice == 1:
+        test_markers()
+    elif test_choice == 2:
+        read_markers()
+
+    
