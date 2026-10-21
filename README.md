@@ -6,15 +6,16 @@ MacOS & Linux:
 `curl -LsSf https://astral.sh/uv/install.sh | sh`
 
 
-# 2. Download .zip file from Github
-Download the project as .zip file
-![image](files/Users/jzhang/Desktop/Isolated.png)
-Unzip the file in a handy place
+# 2. Download .zip file from Github  
+* Download the project as .zip file  
+* Unzip the file in a handy place  
+  
+![image](download_zip.png)  
 
 # 3. Open VS Code in the correct folder
-Open VS Code
-Click File > Open Folder
-Select the folder where you just unzipped the project
+* Open VS Code  
+* Click File > Open Folder  
+* Select the folder where you just unzipped the project  
 
 # 4. Sync environment as intended by instructor
 Open a terminal in VS code and run:  
