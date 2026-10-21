@@ -353,6 +353,7 @@ def data_analysis(participant_number):
 if __name__ == "__main__":
     # Work from the directory containing this script, as in EEG_N_back_task.py.
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
-    os.makedirs("data", exist_ok=True)
+    if not(os.path.isdir('Flanker_data')):
+        os.makedr("Flanker_data", exist_ok=True)
     print(f"\nCurrent working directory:\n{os.getcwd()}\n")
     main()
