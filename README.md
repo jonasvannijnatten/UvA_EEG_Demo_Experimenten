@@ -22,5 +22,8 @@ Open a terminal in VS code and run:
 `uv sync`
 
 # 5. Run your app/test/script
-`uv run my-script`         # if defined in pyproject.toml [project.scripts]    
-`uv run python script.py`  # for any script
+`uv run name_of_script.py`
+For this EEG demo there are three scripts:  
+1. Demo_Artefacten.py  
+2. Demo_OgenOpenDicht.py  
+3. Demo_Flanker.py  
