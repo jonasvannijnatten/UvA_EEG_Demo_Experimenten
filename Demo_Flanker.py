@@ -17,6 +17,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from interactive_figure import interactive_figure
 
+import markers
+
 # Set this to True only when the markers module and EEG serial device are ready.
 EEG_CONNECTED = True
 
@@ -52,7 +54,6 @@ def main(debugging = False):
     # Connect to EEG hardware only if explicitly requested above.
     if EEG_CONNECTED:
         try:
-            import markers
             serial_port = markers.connect_serial_port(EEG_CONNECTED)
         except (ImportError, OSError) as error:
             print("Unable to connect to the serial device.")
@@ -178,13 +179,13 @@ def run_trial(condition):
     """
     info = CONDITION_INFO[condition]
 
-    # Random pre-stimulus fixation interval: 0--1 second.
+    # Random pre-stimulus fixation interval
     show_fixation_cross()
-    interactive_figure.wait(random.uniform(0, 1))
+    interactive_figure.wait(random.uniform(0, 1)+.5) # random interval of 0.5-1.5 seconds
 
     # Present the 3 by 3 arrow array for 200 ms and collect an early response.
     show_flanker_stimulus(condition)
-    send_marker(info["marker"])
+    markers.send(serial_port,info["marker"])
     start_time = time.perf_counter()
     interactive_figure.wait_for_interaction(0.2)
     response_key = normalise_key(interactive_figure.get_last_key_press())
@@ -299,12 +300,12 @@ def draw_central_text(text, fontsize):
     interactive_figure.draw()
 
 
-def send_marker(marker_value):
-    """Send the condition marker when EEG recording is enabled."""
-    if EEG_CONNECTED and serial_port is not None:
-        # This follows the marker convention of the MATLAB task: 30 + condition.
-        # Depending on the serial interface, write may require bytes instead.
-        serial_port.write(marker_value)
+# def send_marker(marker_value):
+#     """Send the condition marker when EEG recording is enabled."""
+#     if EEG_CONNECTED and serial_port is not None:
+#         # This follows the marker convention of the MATLAB task: 30 + condition.
+#         # Depending on the serial interface, write may require bytes instead.
+#         serial_port.write(marker_value)
 
 
 def save_data(data_all_trials, participant_number, suffix=""):
